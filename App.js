@@ -177,7 +177,6 @@ const styles = StyleSheet.create({
   fontButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
   },
   fontButton: {
     backgroundColor: '#e0e0e0',
@@ -218,7 +217,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   platformList: {
-    gap: 10,
   },
   platformItem: {
     fontSize: 16,
