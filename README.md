@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DataLogger
 
 A comprehensive data logging application for vehicle testing and annotation.
@@ -99,3 +100,6 @@ datalogger/
 ## License
 
 See [LICENSE](LICENSE) file for details.
+=======
+# ride_logger
+>>>>>>> d6164e689ac4b13c071bd95c84a974fc4750db4c
