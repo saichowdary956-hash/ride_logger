@@ -135,8 +135,9 @@
         
         .condition-card {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
             padding: 10px;
             background: #f9f9f9;
             border-radius: 10px;
@@ -155,6 +156,8 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(81, 207, 102, 0.3);
+            flex: 1;
+            min-width: 120px;
         }
         
         .condition-btn:hover {
@@ -173,15 +176,15 @@
             font-size: 15px;
             font-weight: bold;
             color: #333;
-            text-align: center;
-            padding: 4px;
+            text-align: right;
+            padding: 4px 8px;
+            min-width: 80px;
+            background: white;
+            border-radius: 6px;
         }
         
         .condition-status {
-            font-size: 12px;
-            text-align: center;
-            padding: 3px;
-            border-radius: 5px;
+            display: none;
         }
 
         .reset-btn {
