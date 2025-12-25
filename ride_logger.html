@@ -124,13 +124,35 @@
             background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
         }
         
-        /* Conditions Grid Layout */
+        /* Conditions Grid Layout - Horizontal for Mobile */
         .conditions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            display: flex;
+            flex-direction: row;
             gap: 12px;
             padding: 15px;
             background: white;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+        
+        .conditions-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .conditions-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .conditions-grid::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .conditions-grid::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
         
         .condition-card {
@@ -141,6 +163,9 @@
             background: #f9f9f9;
             border-radius: 10px;
             transition: all 0.3s;
+            min-width: 140px;
+            flex-shrink: 0;
+            scroll-snap-align: start;
         }
         
         .condition-btn {
