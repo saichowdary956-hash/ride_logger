@@ -186,16 +186,103 @@
             background: #ff9800;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 18px;
             transition: all 0.3s;
         }
 
         .reset-btn:hover {
             background: #f57c00;
             transform: translateY(-2px);
+        }
+        
+        /* Confirmation Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            min-width: 350px;
+            animation: slideDown 0.3s;
+        }
+        
+        .modal-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-yes {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+        }
+        
+        .modal-btn-yes:hover {
+            background: linear-gradient(135deg, #40c057 0%, #2f9e44 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(81, 207, 102, 0.4);
+        }
+        
+        .modal-btn-cancel {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        .modal-btn-cancel:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         table {
@@ -359,6 +446,17 @@
     </style>
 </head>
 <body>
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3 id="confirmMessage">Are you sure?</h3>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-yes" onclick="confirmYes()">Yes</button>
+                <button class="modal-btn modal-btn-cancel" onclick="confirmCancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
         <h1>🚗 DataLogger</h1>
 
@@ -636,19 +734,49 @@
         }
 
         function resetCategory(category) {
-            if (activeConditions[category]) {
-                stopRecording(category);
+            showConfirmation(
+                `Are you sure you want to reset ${category}?`,
+                () => {
+                    if (activeConditions[category]) {
+                        stopRecording(category);
+                    }
+                    
+                    categories[category].forEach(condition => {
+                        const key = `${category}|${condition}`;
+                        conditionData[key].time = 0;
+                        conditionData[key].status = 'Stopped';
+                    });
+                    
+                    renderConditions();
+                    saveData();
+                    showAlert(`${category} reset successfully`, 'success');
+                }
+            );
+        }
+        
+        function showConfirmation(message, onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            const messageEl = document.getElementById('confirmMessage');
+            messageEl.textContent = message;
+            modal.classList.add('show');
+            
+            // Store the callback
+            window.confirmCallback = onConfirm;
+        }
+        
+        function confirmYes() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('show');
+            if (window.confirmCallback) {
+                window.confirmCallback();
+                window.confirmCallback = null;
             }
-            
-            categories[category].forEach(condition => {
-                const key = `${category}|${condition}`;
-                conditionData[key].time = 0;
-                conditionData[key].status = 'Stopped';
-            });
-            
-            renderConditions();
-            saveData();
-            showAlert(`${category} reset successfully`, 'success');
+        }
+        
+        function confirmCancel() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('show');
+            window.confirmCallback = null;
         }
 
         function stopAll() {
@@ -708,8 +836,11 @@
                         seconds += elapsed;
                     }
                     
-                    const minutes = (seconds / 60).toFixed(2);
-                    csv += `${category},${condition},${seconds},${minutes}\n`;
+                    // Only include conditions that have been recorded (time > 0)
+                    if (seconds > 0) {
+                        const minutes = (seconds / 60).toFixed(2);
+                        csv += `${category},${condition},${seconds},${minutes}\n`;
+                    }
                 });
             });
 
